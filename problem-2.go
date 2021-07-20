@@ -2,12 +2,14 @@ package main
 
 import "fmt"
 
+// Tree struct contains a root rune, left and right pointer to another Tree struct
 type Tree struct{
 	root rune
 	left *Tree
 	right *Tree
 }
 
+// Returns a new Tree
 func newTree(root rune) *Tree{
 	var tree = &Tree{root: root}
 	tree.left = nil
@@ -15,6 +17,7 @@ func newTree(root rune) *Tree{
 	return tree
 }
 
+// Preorder traversal
 func preorder(tree *Tree){
 
 	if tree != nil{
@@ -26,6 +29,7 @@ func preorder(tree *Tree){
 
 }
 
+// Postorder traversal
 func postorder(tree *Tree){
 	if tree != nil{
 		postorder(tree.left)
@@ -41,8 +45,6 @@ func main(){
 	tree.right = newTree('-')
 	tree.right.left = newTree('b')
 	tree.right.right = newTree('c')
-
-	//fmt.Printf("%c \n", tree.root)
 
 	preorder(tree)
 	fmt.Println()
