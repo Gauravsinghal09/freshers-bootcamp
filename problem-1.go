@@ -4,22 +4,21 @@ import (
 	"fmt"
 )
 
-// a Struct Matrix
-// containing number of rows, number of columns, 2D slice
+// Matrix containing number of rows, number of columns, 2D slice
 type Matrix struct{
-	num_rows int
-	num_cols int
+	numRows  int
+	numCols  int
 	elements [][]int
 }
 
 // gets number of rows
 func (matrix *Matrix) getNumRows() int{
-	return matrix.num_rows
+	return matrix.numRows
 }
 
 // get number of columns
 func (matrix *Matrix) getNumCols() int{
-	return matrix.num_cols
+	return matrix.numCols
 }
 
 // sets value of element at x, y
@@ -30,29 +29,29 @@ func (matrix *Matrix) setElement(value, x, y int) {
 
 // adds two matrix elements and return a new struct Matrix
 func (matrix1 *Matrix) addMatrix(matrix2 *Matrix) Matrix{
-	var num_rows = matrix1.getNumRows()
-	var num_cols = matrix1.getNumCols()
-	var res_matrix = Matrix{num_rows: num_rows, num_cols: num_cols}
-	res_matrix.elements = make([][]int, num_rows)
-	for row:=0; row<num_rows; row++ {
-		res_matrix.elements[row] = make([]int, num_cols)
-		for col:=0; col<num_cols; col++{
-			res_matrix.elements[row][col] = matrix1.elements[row][col] + matrix2.elements[row][col]
+	var numRows = matrix1.getNumRows()
+	var numCols = matrix1.getNumCols()
+	var resMatrix = Matrix{numRows: numRows, numCols: numCols}
+	resMatrix.elements = make([][]int, numRows)
+	for row:=0; row< numRows; row++ {
+		resMatrix.elements[row] = make([]int, numCols)
+		for col:=0; col< numCols; col++{
+			resMatrix.elements[row][col] = matrix1.elements[row][col] + matrix2.elements[row][col]
 		}
 	}
-	return res_matrix
+	return resMatrix
 }
 
 func main(){
 
-	var matrix1 = Matrix{num_rows: 3, num_cols: 3}
+	var matrix1 = Matrix{numRows: 3, numCols: 3}
 	matrix1.elements = [][]int{
 		{1, 2, 3},
 		{4, 5, 6},
 		{7, 8, 9},
 	}
 
-	var matrix2 = Matrix{num_rows: 3, num_cols: 3}
+	var matrix2 = Matrix{numRows: 3, numCols: 3}
 	matrix2.elements = [][]int{
 		{1, 2, 3},
 		{4, 5, 6},
