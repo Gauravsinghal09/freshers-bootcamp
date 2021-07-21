@@ -1,68 +1,90 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 )
 
 // Matrix containing number of rows, number of columns, 2D slice
-type Matrix struct{
-	numRows  int
-	numCols  int
-	elements [][]int
+type Matrix struct {
+	NumRows  int     `json:"NumRows"`
+	NumCols  int     `json:"NumCols"`
+	Elements [][]int `json:"Elements"`
 }
 
 // gets number of rows
-func (matrix *Matrix) getNumRows() int{
-	return matrix.numRows
+func (matrix *Matrix) getNumRows() int {
+	return matrix.NumRows
 }
 
 // get number of columns
-func (matrix *Matrix) getNumCols() int{
-	return matrix.numCols
+func (matrix *Matrix) getNumCols() int {
+	return matrix.NumCols
 }
 
-// sets value of element at x, y
-func (matrix *Matrix) setElement(value, x, y int) {
-	matrix.elements[x][y] = value
-	return ;
+func (matrix *Matrix) init() {
+	numRows := matrix.getNumRows()
+	numCols := matrix.getNumCols()
+	matrix.Elements = make([][]int, numRows)
+	val := 0
+	for row := 0; row < numRows; row++ {
+		matrix.Elements[row] = make([]int, numCols)
+		for col := 0; col < numCols; col++ {
+			val++
+			matrix.setElementAt(row, col, val)
+		}
+	}
 }
 
-// adds two matrix elements and return a new struct Matrix
-func (matrix1 *Matrix) addMatrix(matrix2 *Matrix) Matrix{
+// sets value of element at row, col
+func (matrix *Matrix) setElementAt(row, col, value int) error {
+	if row < 0 || row >= matrix.getNumRows() || col < 0 || col >= matrix.getNumCols() {
+		return errors.New("index out of bound")
+	}
+	matrix.Elements[row][col] = value
+	return nil
+}
+
+// addMatrix function adds two matrix elements and return a new struct Matrix
+func addMatrix(matrix1, matrix2 *Matrix) Matrix {
 	var numRows = matrix1.getNumRows()
 	var numCols = matrix1.getNumCols()
-	var resMatrix = Matrix{numRows: numRows, numCols: numCols}
-	resMatrix.elements = make([][]int, numRows)
-	for row:=0; row< numRows; row++ {
-		resMatrix.elements[row] = make([]int, numCols)
-		for col:=0; col< numCols; col++{
-			resMatrix.elements[row][col] = matrix1.elements[row][col] + matrix2.elements[row][col]
+	var resMatrix = Matrix{NumRows: numRows, NumCols: numCols}
+	resMatrix.init()
+	for row := 0; row < numRows; row++ {
+		for col := 0; col < numCols; col++ {
+			resMatrix.Elements[row][col] = matrix1.Elements[row][col] + matrix2.Elements[row][col]
 		}
 	}
 	return resMatrix
 }
 
-func main(){
+func (matrix *Matrix) printAsJson() {
+	data, err := json.Marshal(matrix)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	m := string(data)
+	fmt.Printf("Matrix: %s\n", m)
+}
 
-	var matrix1 = Matrix{numRows: 3, numCols: 3}
-	matrix1.elements = [][]int{
-		{1, 2, 3},
-		{4, 5, 6},
-		{7, 8, 9},
+func main() {
+
+	var matrix1 = Matrix{NumRows: 3, NumCols: 3}
+	matrix1.init()
+
+	var matrix2 = Matrix{NumRows: 3, NumCols: 3}
+	matrix2.init()
+
+	err := matrix1.setElementAt(0, 0, 10)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	var matrix2 = Matrix{numRows: 3, numCols: 3}
-	matrix2.elements = [][]int{
-		{1, 2, 3},
-		{4, 5, 6},
-		{7, 8, 9},
-	}
-
-	fmt.Println(matrix1.getNumRows())
-	fmt.Println(matrix1.getNumCols())
-
-	matrix1.setElement(10, 0, 0)
-
-	fmt.Println(matrix1.addMatrix(&matrix2))
-
+	matrix1.printAsJson()
+	matrix2.printAsJson()
+	matrix3 := addMatrix(&matrix1, &matrix2)
+	matrix3.printAsJson()
 }
