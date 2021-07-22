@@ -2,42 +2,53 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"sync"
+	"time"
 )
 
-func calcLetterFrequency(wordArray []string, letterFreq map[string]int, done chan bool) {
-	var wg sync.WaitGroup
+// Init initialises the frequency map for 26 characters
+func Init(letterFreq map[string]int) {
+	for char := 'a'; char <= 'z'; char++ {
+		letterFreq[string(char)] = 0
+	}
+}
 
-	fmt.Println("Counting Starts")
-	var mutex = &sync.Mutex{}
+// preProcess transforms the string to lower case
+func preProcess(wordArray []string) {
+	for _, word := range wordArray {
+		word = strings.ToLower(word)
+	}
+}
+
+// calcLetterFrequency calculates the frequency of each letter
+func calcLetterFrequency(wordArray []string, letterFreq map[string]int, mutex *sync.Mutex, wg *sync.WaitGroup) {
 	for _, word := range wordArray {
 		wg.Add(1)
 		go func(word string) {
 			defer wg.Done()
 			for _, letter := range word {
-				go func(letter int32) {
-					mutex.Lock()
-					letterFreq[string(letter)]++
-					mutex.Unlock()
-				}(letter)
+				mutex.Lock()
+				letterFreq[string(letter)]++
+				mutex.Unlock()
+				time.Sleep(time.Millisecond)
 			}
 		}(word)
 	}
-
-	wg.Wait()
-	fmt.Println("Counting Ends")
-	done <- true
 }
 
 func main() {
 
-	var wordArray = []string{"quick", "brown", "fox", "lazy", "dog"}
+	var wg sync.WaitGroup
+	var mutex = sync.Mutex{}
+	var wordArray = []string{"quick", "dog", "dog", "dog", "dog"}
 	var letterFreq = make(map[string]int)
 
-	done := make(chan bool)
+	Init(letterFreq)
+	preProcess(wordArray)
 
-	go calcLetterFrequency(wordArray, letterFreq, done)
-	<-done
+	calcLetterFrequency(wordArray, letterFreq, &mutex, &wg)
+	wg.Wait()
 
 	fmt.Println(letterFreq)
 }
