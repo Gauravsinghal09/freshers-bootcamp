@@ -44,6 +44,7 @@ func (counter *Counter) calcLetterFrequency(wg *sync.WaitGroup) {
 
 // prints the frequency of each letter
 func (counter *Counter) printFrequency() {
+	fmt.Printf("Frequency of each letter is: \n")
 	fmt.Println(counter.letterFreq)
 }
 
