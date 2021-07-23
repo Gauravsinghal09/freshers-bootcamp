@@ -8,27 +8,29 @@ import (
 type Account struct {
 	balance uint
 	mu      sync.Mutex
-	wg      sync.WaitGroup
 }
 
-func (account *Account) deposit(amount uint) {
-	defer account.wg.Done()
+func (account *Account) deposit(wg *sync.WaitGroup, amount uint) {
+	defer wg.Done()
 	account.mu.Lock()
 	account.balance += amount
 	account.getBalance()
 	account.mu.Unlock()
 }
 
-func (account *Account) withdraw(amount uint) {
-	defer account.wg.Done()
+func (account *Account) withdraw(wg *sync.WaitGroup, amount uint) {
+	defer func() {
+		account.mu.Unlock()
+		wg.Done()
+	}()
 	account.mu.Lock()
 	if account.balance < amount {
 		fmt.Printf("Withdrawl amount %d exceeds balance %d \n", amount, account.balance)
 		return
+	} else {
+		account.balance -= amount
+		account.getBalance()
 	}
-	account.balance -= amount
-	account.getBalance()
-	account.mu.Unlock()
 }
 
 func (account *Account) getBalance() uint {
@@ -37,15 +39,16 @@ func (account *Account) getBalance() uint {
 }
 
 func main() {
-
+	var wg sync.WaitGroup
 	account := Account{}
+	account.balance = 15000
 
-	account.wg.Add(4)
-	go account.deposit(500)
-	go account.deposit(10000)
-	go account.withdraw(10000)
-	go account.withdraw(100)
-	account.wg.Wait()
+	wg.Add(4)
+	go account.deposit(&wg, 500)
+	go account.deposit(&wg, 10000)
+	go account.withdraw(&wg, 10000)
+	go account.withdraw(&wg, 100)
+	wg.Wait()
 
 	account.getBalance()
 }
