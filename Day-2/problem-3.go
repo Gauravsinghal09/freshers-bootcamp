@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 )
@@ -18,14 +19,14 @@ func (account *Account) deposit(wg *sync.WaitGroup, amount uint) {
 	account.mu.Unlock()
 }
 
-func (account *Account) withdraw(wg *sync.WaitGroup, amount uint) {
+func (account *Account) withdraw(wg *sync.WaitGroup, amount uint, err chan<- error) {
 	defer func() {
 		account.mu.Unlock()
 		wg.Done()
 	}()
 	account.mu.Lock()
 	if account.balance < amount {
-		fmt.Printf("Withdrawl amount %d exceeds balance %d \n", amount, account.balance)
+		err <- errors.New(fmt.Sprintf("Withdrawl amount %d exceeds balance %d \n", amount, account.balance))
 		return
 	} else {
 		account.balance -= amount
@@ -42,13 +43,19 @@ func main() {
 	var wg sync.WaitGroup
 	account := Account{}
 	account.balance = 15000
+	err := make(chan error, 2)
 
 	wg.Add(4)
+
 	go account.deposit(&wg, 500)
 	go account.deposit(&wg, 10000)
-	go account.withdraw(&wg, 10000)
-	go account.withdraw(&wg, 100)
+	go account.withdraw(&wg, 10000, err)
+	go account.withdraw(&wg, 100, err)
 	wg.Wait()
+	close(err)
+	for er := range err {
+		fmt.Println(er)
+	}
 
 	account.getBalance()
 }
