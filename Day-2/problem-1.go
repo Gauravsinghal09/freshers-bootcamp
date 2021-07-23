@@ -4,51 +4,58 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-	"time"
 )
 
+type Counter struct {
+	mutex      sync.Mutex
+	wordArray  []string
+	letterFreq map[string]int
+}
+
 // Init initialises the frequency map for 26 characters
-func Init(letterFreq map[string]int) {
+func (counter *Counter) Init() {
+	counter.letterFreq = make(map[string]int)
 	for char := 'a'; char <= 'z'; char++ {
-		letterFreq[string(char)] = 0
+		counter.letterFreq[string(char)] = 0
 	}
 }
 
 // preProcess transforms the string to lower case
-func preProcess(wordArray []string) {
-	for _, word := range wordArray {
-		word = strings.ToLower(word)
+func (counter *Counter) preProcess() {
+	for id, word := range counter.wordArray {
+		counter.wordArray[id] = strings.ToLower(word)
 	}
 }
 
 // calcLetterFrequency calculates the frequency of each letter
-func calcLetterFrequency(wordArray []string, letterFreq map[string]int, mutex *sync.Mutex, wg *sync.WaitGroup) {
-	for _, word := range wordArray {
+func (counter *Counter) calcLetterFrequency(wg *sync.WaitGroup) {
+	for _, word := range counter.wordArray {
 		wg.Add(1)
 		go func(word string) {
 			defer wg.Done()
 			for _, letter := range word {
-				mutex.Lock()
-				letterFreq[string(letter)]++
-				mutex.Unlock()
-				time.Sleep(time.Millisecond)
+				counter.mutex.Lock()
+				counter.letterFreq[string(letter)]++
+				counter.mutex.Unlock()
 			}
 		}(word)
 	}
 }
 
+// prints the frequency of each letter
+func (counter *Counter) printFrequency() {
+	fmt.Println(counter.letterFreq)
+}
+
 func main() {
 
 	var wg sync.WaitGroup
-	var mutex = sync.Mutex{}
-	var wordArray = []string{"quick", "dog", "dog", "dog", "dog"}
-	var letterFreq = make(map[string]int)
+	counter := Counter{}
+	counter.wordArray = []string{"quick", "dog", "dog", "dog", "dog"}
+	counter.Init()
+	counter.preProcess()
 
-	Init(letterFreq)
-	preProcess(wordArray)
-
-	calcLetterFrequency(wordArray, letterFreq, &mutex, &wg)
+	counter.calcLetterFrequency(&wg)
 	wg.Wait()
-
-	fmt.Println(letterFreq)
+	counter.printFrequency()
 }
