@@ -2,28 +2,58 @@ package main
 
 import "fmt"
 
-// salary Interface contains a method calc_salary
-type salary interface{
-	calc_salary() float64
+// Employee Interface contains a method calc_salary
+// calcSalary calculates the salary of an employee
+type Employee interface {
+	calcSalary() float64
 }
 
-// employee struct contains basic which denotes basic pay per unit duration
-// and the total duration worked
-type employee struct{
-	basic float64
+// FullTime struct contains basic which denotes basic pay per unit duration
+// duration in days
+type FullTime struct {
+	basic    float64
 	duration float64
 }
 
-// calculates salary of an employee on the basis of basic and duration worked
-func (emp *employee) calc_salary() float64{
-	return emp.basic * emp.duration
+func (fte *FullTime) calcSalary() float64 {
+	return fte.basic * fte.duration
 }
 
-func main(){
-	var fulltime = employee{500 ,28}
-	var contractor = employee{100, 28}
-	var freelancer = employee{50, 20}
-	fmt.Println(fulltime.calc_salary())
-	fmt.Println(contractor.calc_salary())
-	fmt.Println(freelancer.calc_salary())
+// Contractor struct contains basic which denotes basic pay per unit duration
+// duration in days
+type Contractor struct {
+	basic    float64
+	duration float64
+}
+
+func (c *Contractor) calcSalary() float64 {
+	return c.basic * c.duration
+}
+
+// Freelancer struct contains basic which denotes basic pay per unit duration
+// duration in hours
+type Freelancer struct {
+	basic    float64
+	duration float64
+}
+
+func (f *Freelancer) calcSalary() float64 {
+	return f.basic * f.duration
+}
+
+// calcTotalExpense calculates the total expense the employer will bear
+func calcTotalExpense(employees []Employee) float64 {
+	expense := 0.0
+	for _, employee := range employees {
+		expense += employee.calcSalary()
+	}
+	return expense
+}
+
+func main() {
+	var fte = FullTime{500, 28}
+	var contractor = Contractor{100, 28}
+	var freelancer = Freelancer{10, 20}
+	var employees = []Employee{&fte, &contractor, &freelancer}
+	fmt.Println(calcTotalExpense(employees))
 }
