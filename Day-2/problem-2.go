@@ -19,13 +19,13 @@ type student struct {
 }
 
 func (stud *student) giveRating() int {
-	stud.rating = 10
+	stud.rating = rand.Intn(10)
 	return stud.rating
 }
 
 // calcRating calculates teacher ratings
 func (tch *teacher) calcRating(students []student) (float64, error) {
-
+	rand.Seed(time.Now().UnixNano())
 	var wg sync.WaitGroup
 	var total int64
 	totalStudents := len(students)
@@ -33,14 +33,15 @@ func (tch *teacher) calcRating(students []student) (float64, error) {
 		return 0, errors.New("null value passed")
 	}
 
-	for _, st := range students {
+	for id, st := range students {
 		wg.Add(1)
-		go func(st student) {
+		go func(st student, id int) {
 			defer wg.Done()
 			st.timeTaken = rand.Intn(10)
 			time.Sleep(time.Duration(st.timeTaken))
 			atomic.AddInt64(&total, int64(st.giveRating()))
-		}(st)
+			fmt.Printf("Student %d rating %d\n", id, st.rating)
+		}(st, id)
 	}
 
 	wg.Wait()
@@ -50,11 +51,11 @@ func (tch *teacher) calcRating(students []student) (float64, error) {
 }
 
 func main() {
-	students := make([]student, 200)
+	students := make([]student, 10)
 	tch := teacher{}
 	_, err := tch.calcRating(students)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(tch.rating)
+	fmt.Printf("Average Rating of teacher %f\n", tch.rating)
 }
