@@ -5,7 +5,7 @@ import "fmt"
 // Employee Interface contains a method calc_salary
 // calcSalary calculates the salary of an employee
 type Employee interface {
-	calcSalary() float64
+	CalcSalary() float64
 }
 
 // FullTime struct contains basic which denotes basic pay per unit duration
@@ -15,7 +15,7 @@ type FullTime struct {
 	duration float64
 }
 
-func (fte *FullTime) calcSalary() float64 {
+func (fte *FullTime) CalcSalary() float64 {
 	return fte.basic * fte.duration
 }
 
@@ -26,7 +26,7 @@ type Contractor struct {
 	duration float64
 }
 
-func (c *Contractor) calcSalary() float64 {
+func (c *Contractor) CalcSalary() float64 {
 	return c.basic * c.duration
 }
 
@@ -37,7 +37,7 @@ type Freelancer struct {
 	duration float64
 }
 
-func (f *Freelancer) calcSalary() float64 {
+func (f *Freelancer) CalcSalary() float64 {
 	return f.basic * f.duration
 }
 
@@ -45,7 +45,7 @@ func (f *Freelancer) calcSalary() float64 {
 func calcTotalExpense(employees []Employee) float64 {
 	expense := 0.0
 	for _, employee := range employees {
-		expense += employee.calcSalary()
+		expense += employee.CalcSalary()
 	}
 	return expense
 }
