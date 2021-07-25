@@ -15,7 +15,8 @@ func main() {
 		fmt.Println("Status", er)
 	}
 	defer Config.DB.Close()
-	Config.DB.AutoMigrate(&Models.Student{})
+	var models = []interface{}{&Models.Student{}}
+	Config.DB.AutoMigrate(models...)
 	routes := Routes.SetupRoutes()
 	routes.Run()
 }

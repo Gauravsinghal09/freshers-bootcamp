@@ -1,61 +1,73 @@
 package Controllers
 
 import (
-	"Freshers_2021/Day-3/problem-2/Config"
 	"Freshers_2021/Day-3/problem-2/Models"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 	"net/http"
 )
 
+//GetUsers ... Get all users
 func GetUsers(c *gin.Context) {
-	student := &[]Models.Student{}
-	err := Config.DB.Find(student).Error
+	var user []Models.Student
+	err := Models.GetAllUsers(&user)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
-		c.JSON(http.StatusOK, *student)
+		c.JSON(http.StatusOK, user)
 	}
 }
 
+//CreateUser ... Create User
 func CreateUser(c *gin.Context) {
-	student := &Models.Student{}
-	c.BindJSON(student)
-	err := Config.DB.Create(student).Error
+	var user Models.Student
+	c.BindJSON(&user)
+	err := Models.CreateUser(&user)
 	if err != nil {
+		fmt.Println(err.Error())
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
-		c.JSON(http.StatusOK, *student)
+		c.JSON(http.StatusOK, user)
 	}
 }
 
+//GetUserByID ... Get the user by id
 func GetUserByID(c *gin.Context) {
-	student := &Models.Student{}
 	id := c.Params.ByName("id")
-	err := Config.DB.Where("id = ?", id).First(student).Error
+	var user Models.Student
+	err := Models.GetUserByID(&user, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
-		c.JSON(http.StatusOK, *student)
+		c.JSON(http.StatusOK, user)
 	}
 }
 
+//UpdateUser ... Update the user information
 func UpdateUser(c *gin.Context) {
+	var user Models.Student
 	id := c.Params.ByName("id")
-	student := &Models.Student{}
-	err := Config.DB.Where("id = ?", id).First(student).Error
-	c.BindJSON(student)
+	err := Models.GetUserByID(&user, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, user)
+	}
+	c.BindJSON(&user)
+	err = Models.UpdateUser(&user, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
-		Config.DB.Save(student)
-		c.JSON(http.StatusOK, *student)
+		c.JSON(http.StatusOK, user)
 	}
 }
 
+//DeleteUser ... Delete the user
 func DeleteUser(c *gin.Context) {
-	student := &Models.Student{}
+	var user Models.Student
 	id := c.Params.ByName("id")
-	Config.DB.Where("id = ?", id).Delete(student)
-	c.JSON(http.StatusOK, gin.H{"id" + id: "is deleted"})
+	err := Models.DeleteUser(&user, id)
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, gin.H{"id" + id: "is deleted"})
+	}
 }
