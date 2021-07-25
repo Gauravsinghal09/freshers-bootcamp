@@ -46,18 +46,35 @@ func (matrix *Matrix) setElementAt(row, col, value int) error {
 	return nil
 }
 
+func (matrix *Matrix) getElementAt(row, col int) (int, error) {
+	if row < 0 || row >= matrix.getNumRows() || col < 0 || col >= matrix.getNumCols() {
+		return 0, errors.New("index out of bound")
+	}
+
+	value := matrix.Elements[row][col]
+	return value, nil
+}
+
 // addMatrix function adds two matrix elements and return a new struct Matrix
-func addMatrix(matrix1, matrix2 *Matrix) Matrix {
+func addMatrix(matrix1, matrix2 *Matrix) *Matrix {
 	var numRows = matrix1.getNumRows()
 	var numCols = matrix1.getNumCols()
 	var resMatrix = Matrix{NumRows: numRows, NumCols: numCols}
 	resMatrix.init()
 	for row := 0; row < numRows; row++ {
 		for col := 0; col < numCols; col++ {
-			resMatrix.Elements[row][col] = matrix1.Elements[row][col] + matrix2.Elements[row][col]
+			val1, er1 := matrix1.getElementAt(row, col)
+			if er1 != nil {
+				fmt.Println(er1)
+			}
+			val2, er2 := matrix2.getElementAt(row, col)
+			if er2 != nil {
+				fmt.Println(er2)
+			}
+			resMatrix.setElementAt(row, col, val1+val2)
 		}
 	}
-	return resMatrix
+	return &resMatrix
 }
 
 func (matrix *Matrix) printAsJson() {
@@ -66,8 +83,7 @@ func (matrix *Matrix) printAsJson() {
 		fmt.Println(err)
 		return
 	}
-	m := string(data)
-	fmt.Printf("Matrix: %s\n", m)
+	fmt.Printf("Matrix: %s\n", string(data))
 }
 
 func main() {
@@ -85,6 +101,6 @@ func main() {
 
 	matrix1.printAsJson()
 	matrix2.printAsJson()
-	matrix3 := addMatrix(&matrix1, &matrix2)
+	matrix3 := *addMatrix(&matrix1, &matrix2)
 	matrix3.printAsJson()
 }
