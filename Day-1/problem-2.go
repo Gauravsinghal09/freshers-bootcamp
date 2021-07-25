@@ -39,7 +39,6 @@ func (tree *Tree) Postorder() {
 }
 
 func main() {
-
 	var tree = NewTree('+')
 	tree.left = NewTree('a')
 	tree.right = NewTree('-')
@@ -51,6 +50,7 @@ func main() {
 	fmt.Println()
 	fmt.Printf("Postorder: ")
 	tree.Postorder()
+
 	fmt.Println()
 
 }
