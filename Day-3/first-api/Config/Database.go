@@ -1,8 +1,8 @@
 package Config
 
 import (
-	"/github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
 )
 
 var DB *gorm.DB
@@ -20,7 +20,7 @@ func BuildDBConfig() *DBConfig {
 		Host:     "localhost",
 		Port:     3306,
 		User:     "root",
-		Password: "1234",
+		Password: "password",
 		DBName:   "first_go",
 	}
 	return &dbConfig
