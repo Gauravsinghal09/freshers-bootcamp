@@ -11,46 +11,46 @@ type Tree struct {
 	right *Tree
 }
 
-// newTree function returns a new Tree struct
-func newTree(root rune) *Tree {
+// NewTree function returns a new Tree struct
+func NewTree(root rune) *Tree {
 	var tree = &Tree{root: root}
 	tree.left = nil
 	tree.right = nil
 	return tree
 }
 
-// preorder traversal
-func (tree *Tree) preorder() {
+// Preorder traversal
+func (tree *Tree) Preorder() {
 
 	if tree != nil {
 		fmt.Printf("%c ", tree.root)
-		tree.left.preorder()
-		tree.right.preorder()
+		tree.left.Preorder()
+		tree.right.Preorder()
 	}
 }
 
-// postorder traversal
-func (tree *Tree) postorder() {
+// Postorder traversal
+func (tree *Tree) Postorder() {
 	if tree != nil {
-		tree.left.postorder()
-		tree.right.postorder()
+		tree.left.Postorder()
+		tree.right.Postorder()
 		fmt.Printf("%c ", tree.root)
 	}
 }
 
 func main() {
 
-	var tree = newTree('+')
-	tree.left = newTree('a')
-	tree.right = newTree('-')
-	tree.right.left = newTree('b')
-	tree.right.right = newTree('c')
+	var tree = NewTree('+')
+	tree.left = NewTree('a')
+	tree.right = NewTree('-')
+	tree.right.left = NewTree('b')
+	tree.right.right = NewTree('c')
 
 	fmt.Printf("Preorder: ")
-	tree.preorder()
+	tree.Preorder()
 	fmt.Println()
 	fmt.Printf("Postorder: ")
-	tree.postorder()
+	tree.Postorder()
 	fmt.Println()
 
 }
