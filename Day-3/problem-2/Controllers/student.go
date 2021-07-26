@@ -14,7 +14,9 @@ func GetUsers(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
+		fmt.Println(user)
 		c.JSON(http.StatusOK, user)
+
 	}
 }
 

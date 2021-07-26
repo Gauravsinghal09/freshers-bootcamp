@@ -2,14 +2,17 @@ package Models
 
 import (
 	"Freshers_2021/Day-3/problem-2/Config"
-	_ "github.com/go-sql-driver/mysql"
+	"fmt"
+	"gorm.io/gorm/clause"
 )
 
 //GetAllUsers Fetch all user data
 func GetAllUsers(user *[]Student) (err error) {
-	if err = Config.DB.Find(user).Error; err != nil {
+
+	if err = Config.DB.Preload(clause.Associations).Find(user).Error; err != nil {
 		return err
 	}
+	fmt.Println(user)
 	return nil
 }
 
@@ -23,7 +26,7 @@ func CreateUser(user *Student) (err error) {
 
 //GetUserByID ... Fetch only one user by Id
 func GetUserByID(user *Student, id string) (err error) {
-	if err = Config.DB.Where("id = ?", id).First(user).Error; err != nil {
+	if err = Config.DB.Preload(clause.Associations).Where("id = ?", id).First(user).Error; err != nil {
 		return err
 	}
 	return nil

@@ -1,24 +1,25 @@
 package Models
 
 type Student struct {
-	ID           int           `json:"id"`
-	FirstName    string        `json:"firstname"`
-	LastName     string        `json:"lastname"`
-	DOB          string        `json:"dob"`
-	Address      string        `json:"address"`
-	SubjectMarks []SubjectMark `gorm:"foreignKey:ID"`
+	ID           int           //`json:"id"`
+	FirstName    string        //`json:"firstname"`
+	LastName     string        //`json:"lastname"`
+	DOB          string        //`json:"dob"`
+	Address      string        //`json:"address"`
+	SubjectMarks []SubjectMark //`json:"subject_marks"`
 }
 
 type SubjectMark struct {
-	ID      int    `json:"id"`
-	Subject string `json:"subject"`
-	Marks   int    `json:"marks"`
+	ID        int    //`json:"id"`
+	Subject   string //`json:"subject"`
+	Marks     int    //`json:"marks"`
+	StudentID int    //`json:"student_id"`
 }
 
 func (b *Student) TableName() string {
-	return "Student Table"
+	return "student"
 }
 
 func (b *SubjectMark) TableName() string {
-	return "Subject Marks Table"
+	return "subjectmark"
 }
